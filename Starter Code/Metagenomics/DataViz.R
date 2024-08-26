@@ -10,10 +10,7 @@ library(stringr)
 library(ggplot2)
 library(ape) #ape library to compute PCoA of our matrix
 
-# Now set working directory. This should be wherever the files are stored and is the only line that the user needs to edit.
-
-# EDIT THIS LINE
-setwd("/Users/phillipcompeau/go/src/Metagenomics_Final")
+# Now set working directory. To do so, select "Session" --> "Set Working Directory" --> "To Source File Location"
 
 # Part 1: generate box plots of evenness by season using Simpson's index.
 
@@ -89,3 +86,24 @@ cbind(pcoa_vectors, Season2) # adding column
 # Now, plot the data, colored by season.
 ggplot(pcoa_vectors, aes(x=Axis.1, y=Axis.2, color=Season2)) + geom_point()
 ggsave("Plots/PCoA.png")
+
+# Part 4: a bit of fun, Generating a PCoA plot of SARS-CoV-2 data between 2020 and 2022
+# Read in the file and process the table.
+table <- read.csv(file="Matrices/JaccardBetaDiversityMatrix_2020-2022.csv")
+
+#trim the first column out because it only contains names
+table <- table[-c(1)]
+table <- table[, -c(3454)] # trim out weird extra column at end of the matrix file
+
+matrix <- as.matrix(table)
+
+pcoa_data <- pcoa(matrix, correction="none", rn=NULL) #This step may take a minute or two
+pcoa_vectors <- data.frame(pcoa_data$vectors)
+# columns contains a vector for each point after PCoA tries to assign data points to vectors to preserve distances between points.
+
+colnames(table)
+
+
+# Now, plot the data
+ggplot(pcoa_vectors, aes(x=Axis.1, y=Axis.2)) + geom_point()
+ggsave("Plots/JaccardPCoA_2020-2022.png")
