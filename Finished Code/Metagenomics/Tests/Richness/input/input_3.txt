@@ -1,0 +1,3 @@
+lions 2
+bears 4
+bears 3

@@ -1,0 +1,2 @@
+coyotes 1
+deer 999
