@@ -19,6 +19,11 @@ type RichnessTest struct {
 	result int
 }
 
+type SampleTotalTest struct {
+	sample map[string]int
+	result int
+}
+
 // SimpsonsIndexTest is a struct that holds the information for a test that takes a sample and a float
 type SimpsonsIndexTest struct {
 	sample map[string]int
@@ -31,10 +36,10 @@ func TestRichness(t *testing.T) {
 	tests := ReadRichnessTests("Tests/Richness/")
 	for _, test := range tests {
 		//run the test
-		result := Richness(test.sample)
+		ourAnswer := Richness(test.sample)
 		//check the result
-		if result != test.result {
-			t.Errorf("Richness(%v) = %v, want %v", test.sample, result, test.result)
+		if ourAnswer != test.result {
+			t.Errorf("Richness(%v) = %v, want %v", test.sample, ourAnswer, test.result)
 		}
 	}
 }
@@ -54,6 +59,8 @@ func ReadRichnessTests(directory string) []RichnessTest {
 
 	//now, read output files
 	outputFiles := ReadDirectory(directory + "/output")
+
+	//ensure same number of input and output files
 	if len(outputFiles) != numFiles {
 		panic("Error: number of input and output files do not match!")
 	}
@@ -83,7 +90,7 @@ func ReadSample(file string) map[string]int {
 	if err != nil {
 		panic(err)
 	}
-	defer f.Close()
+	defer f.Close() // this command occurs at end of function
 
 	//create a new scanner
 	scanner := bufio.NewScanner(f)
@@ -96,6 +103,7 @@ func ReadSample(file string) map[string]int {
 		line := scanner.Text()
 		//split the line into two parts
 		parts := strings.Split(line, " ")
+		//parts is a slice of strings
 		//add the key and value to the map
 		pattern := parts[0]
 		//convert parts[1] to an int using strconv
@@ -204,4 +212,45 @@ func ReadFloatFromFile(file string) float64 {
 func roundFloat(val float64, precision uint) float64 {
 	ratio := math.Pow(10, float64(precision))
 	return math.Round(val*ratio) / ratio
+}
+
+// TestSampleTotal tests the SampleTotal function
+func TestSampleTotal(t *testing.T) {
+	//read in all tests from the Tests/SampleTotal directory and run them
+	tests := ReadSampleTotalTests("Tests/SampleTotal/")
+	for _, test := range tests {
+		//run the test
+		result := SampleTotal(test.sample)
+		//check the result
+		if result != test.result {
+			t.Errorf("SampleTotal(%v) = %v, want %v", test.sample, result, test.result)
+		}
+	}
+}
+
+// ReadSampleTotalTests takes as input a directory and returns a slice of SampleTotalTest objects
+func ReadSampleTotalTests(directory string) []SampleTotalTest {
+
+	//read in all tests from the directory and run them
+	inputFiles := ReadDirectory(directory + "/input")
+	numFiles := len(inputFiles)
+
+	tests := make([]SampleTotalTest, numFiles)
+	for i, inputFile := range inputFiles {
+		//read in the test's map
+		tests[i].sample = ReadSample(directory + "input/" + inputFile.Name())
+	}
+
+	//now, read output files
+	outputFiles := ReadDirectory(directory + "/output")
+	if len(outputFiles) != numFiles {
+		panic("Error: number of input and output files do not match!")
+	}
+
+	for i, outputFile := range outputFiles {
+		//read in the test's result
+		tests[i].result = ReadIntegerFromFile(directory + "output/" + outputFile.Name())
+	}
+
+	return tests
 }
