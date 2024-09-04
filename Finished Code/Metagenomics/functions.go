@@ -5,82 +5,68 @@ import (
 	"sort"
 )
 
-// BetaDiversityMatrix takes a map of frequency maps along with a distance metric
-// ("Bray-Curtis" or "Jaccard") as input.
-// It returns a slice of strings corresponding to the sorted names of the keys
-// in the map, along with a matrix of distances whose (i,j)-th
-// element is the distance between the i-th and j-th samples using the input metric.
-func BetaDiversityMatrix(allMaps map[string](map[string]int), distanceMetric string) ([]string, [][]float64) {
-	numSamples := len(allMaps)
-	sampleNames := make([]string, 0, numSamples)
-
-	for sampleName := range allMaps {
-		//range over all the sample IDs
-		// add current sample ID to sample names slice
-		sampleNames = append(sampleNames, sampleName)
-	}
-
-	sort.Strings(sampleNames)
-
-	//sampleNames is now sorted
-
-	// matrix should be numSamples x numSamples
-	mtx := InitializeSquareMatrix(numSamples)
-
-	// range through the matrix and set its values
-	for r := range mtx {
-		for c := r + 1; c < len(mtx[r]); c++ {
-			// set mtx[r][c]
-			sampleName1 := sampleNames[r]
-			sampleName2 := sampleNames[c]
-
-			sample1 := allMaps[sampleName1]
-			sample2 := allMaps[sampleName2]
-
-			if distanceMetric == "Jaccard" {
-				mtx[r][c] = JaccardDistance(sample1, sample2)
-			} else if distanceMetric == "Bray-Curtis" {
-				mtx[r][c] = BrayCurtisDistance(sample1, sample2)
-			} else {
-				panic("bad")
-			}
-
-			//set the value that is symmetric across main diagonal
-			mtx[c][r] = mtx[r][c]
-		}
-	}
-
-	return sampleNames, mtx
-}
-
-// SimpsonsMap takes a map of frequency maps as input. It returns a
+// SimpsonsMap takes an array of frequency maps as input. It returns a
 // map mapping each sample name to its Simpson's index.
 func SimpsonsMap(allMaps map[string](map[string]int)) map[string]float64 {
+
 	s := make(map[string]float64)
 
-	//range over all sample names
-	for sampleName := range allMaps {
-		//set current sample name's evenness
-		//equal to simpson's index of current frequency table
-		s[sampleName] = SimpsonsIndex(allMaps[sampleName])
+	for sampleName, freqMap := range allMaps {
+		s[sampleName] = SimpsonsIndex(freqMap)
 	}
-
 	return s
 }
 
 // RichnessMap takes a map of frequency maps as input.  It returns a map
 // whose values are the richness of each sample.
 func RichnessMap(allMaps map[string](map[string]int)) map[string]int {
+
 	r := make(map[string]int)
 
-	for sampleName := range allMaps {
-		// range over all sample names
-		// for each sample name, set its richness value by calling Richness()
-		currentFrequencyTable := allMaps[sampleName]
-		r[sampleName] = Richness(currentFrequencyTable)
+	for sampleName, freqMap := range allMaps {
+		r[sampleName] = Richness(freqMap)
 	}
 
 	return r
+}
+
+// BetaDiversityMatrix takes a map of frequency maps along with a distance metric
+// ("Bray-Curtis" or "Jaccard") as input.
+// It returns a slice of strings corresponding to the sorted names of the keys
+// in the map, along with a matrix of distances whose (i,j)-th
+// element is the distance between the i-th and j-th samples using the input metric.
+func BetaDiversityMatrix(allMaps map[string](map[string]int), distMetric string) ([]string, [][]float64) {
+
+	//first grab all strings
+	numSamples := len(allMaps)
+	sampleNames := make([]string, 0)
+	for name := range allMaps {
+		sampleNames = append(sampleNames, name)
+	}
+
+	// now sort sample names to make matrix ordered
+	sort.Strings(sampleNames)
+
+	// now form the distance matrix
+
+	mtx := InitializeSquareMatrix(numSamples)
+
+	for i := 0; i < numSamples; i++ {
+		for j := i; j < numSamples; j++ {
+			if distMetric == "Bray-Curtis" {
+				d := BrayCurtisDistance(allMaps[sampleNames[i]], allMaps[sampleNames[j]])
+				mtx[i][j] = d
+				mtx[j][i] = d
+			} else if distMetric == "Jaccard" {
+				d := JaccardDistance(allMaps[sampleNames[i]], allMaps[sampleNames[j]])
+				mtx[i][j] = d
+				mtx[j][i] = d
+			} else {
+				panic("Error: Invalid distance metric name given to BetaDiversityMatrix().")
+			}
+		}
+	}
+	return sampleNames, mtx
 }
 
 // DownSampleMaps takes a map of frequency maps and a threshold, and returns a map of frequency maps with the same keys, but with each frequency map randomly downsampled to the threshold.
