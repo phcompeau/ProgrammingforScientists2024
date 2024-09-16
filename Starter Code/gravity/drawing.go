@@ -11,14 +11,14 @@ import (
 //parameter and generates a slice of images corresponding to drawing each Universe
 //on a canvasWidth x canvasWidth canvas
 
-//DrawToCanvas generates the image corresponding to a canvas after drawing a Universe
-//object's bodies on a square canvas that is canvasWidth pixels x canvasWidth pixels
+// DrawToCanvas generates the image corresponding to a canvas after drawing a Universe
+// object's bodies on a square canvas that is canvasWidth pixels x canvasWidth pixels
 func DrawToCanvas(u Universe, canvasWidth int) image.Image {
 	// set a new square canvas
 	c := canvas.CreateNewCanvas(canvasWidth, canvasWidth)
 
-	// create a black background
-	c.SetFillColor(canvas.MakeColor(0, 0, 0))
+	// create a white background
+	c.SetFillColor(canvas.MakeColor(255, 255, 255))
 	c.ClearRect(0, 0, canvasWidth, canvasWidth)
 	c.Fill()
 
