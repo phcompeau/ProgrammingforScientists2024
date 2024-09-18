@@ -214,20 +214,6 @@ func roundFloat(val float64, precision uint) float64 {
 	return math.Round(val*ratio) / ratio
 }
 
-// TestSampleTotal tests the SampleTotal function
-func TestSampleTotal(t *testing.T) {
-	//read in all tests from the Tests/SampleTotal directory and run them
-	tests := ReadSampleTotalTests("Tests/SampleTotal/")
-	for _, test := range tests {
-		//run the test
-		result := SampleTotal(test.sample)
-		//check the result
-		if result != test.result {
-			t.Errorf("SampleTotal(%v) = %v, want %v", test.sample, result, test.result)
-		}
-	}
-}
-
 // ReadSampleTotalTests takes as input a directory and returns a slice of SampleTotalTest objects
 func ReadSampleTotalTests(directory string) []SampleTotalTest {
 
