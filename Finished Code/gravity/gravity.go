@@ -31,8 +31,8 @@ func UpdateUniverse(currentUniverse Universe, time float64) Universe {
 	for i, b := range newUniverse.bodies {
 		oldAcceleration, oldVelocity := b.acceleration, b.velocity // OK :)
 		newUniverse.bodies[i].acceleration = UpdateAcceleration(currentUniverse, b)
-		newUniverse.bodies[i].velocity = UpdateVelocity(b, oldAcceleration, time)
-		newUniverse.bodies[i].position = UpdatePosition(b, oldAcceleration, oldVelocity, time)
+		newUniverse.bodies[i].velocity = UpdateVelocity(newUniverse.bodies[i], oldAcceleration, time)
+		newUniverse.bodies[i].position = UpdatePosition(newUniverse.bodies[i], oldAcceleration, oldVelocity, time)
 	}
 
 	return newUniverse
