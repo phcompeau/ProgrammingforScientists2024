@@ -1,0 +1,3 @@
+We downloaded the protein sequence of hemoglobin subunit alpha for 108 animals from the Uniprot database. These sequences are contained in FASTA format within this folder.
+
+Then, we formed a distance matrix for the protein sequences as follows. For each pair of sequences, we determined the minimum number of mutations needed to transform one sequence into the other, where mutations can involve an inserted symbol, a deleted symbol, or a symbol substitution. This distance is called the "edit distance" between the two strings, and if you take Fundamentals of Bioinformatics with me, you'll learn all about it.

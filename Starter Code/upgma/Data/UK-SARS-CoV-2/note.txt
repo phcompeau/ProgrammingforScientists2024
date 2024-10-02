@@ -1,0 +1,9 @@
+We compiled 100 UK SARS-CoV-2 genomes sampled from patients over every two-week period between November 2020 and March 2024. 
+
+We then sampled three from each time point to yield 261 total.
+
+Each genome has a label in the form YYYY-MM-DD_XX, where YYYY-MM-DD is the date of sampling and XX is a unique identifier for that date.
+
+We excised the spike protein from each genome, and translated this region into an amino acid string. (This is an easy task, as it just involves looking for flanking regions that always indicate the beginning and end of the genome.)
+
+Then, we formed a distance matrix for the resulting protein sequences as follows. For each pair of genomes, we determined the minimum number of mutations needed to transform one sequence into the other, where mutations can involve an inserted symbol, a deleted symbol, or a symbol substitution. This distance is called the "edit distance" between the two strings, and if you take Fundamentals of Bioinformatics with me, you'll learn all about it.

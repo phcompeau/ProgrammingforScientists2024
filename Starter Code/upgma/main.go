@@ -5,7 +5,5 @@ import (
 )
 
 func main() {
-
-	fmt.Println("UPGMA!")
-
+	fmt.Println("Evolutionary trees and UPGMA.")
 }
